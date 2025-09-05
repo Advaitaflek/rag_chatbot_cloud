@@ -7,6 +7,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from transformers import pipeline  
 
+st.set_page_config(page_title="RAG based AI ChatBot model", page_icon="🤖", layout="wide")
+
 # Smaller, faster, fits in 2 GiB RAM
 @st.cache_resource
 def load_model():
@@ -104,7 +106,7 @@ def generate_response(query, context):
 
 # Main function for the Streamlit app
 def main():
-    st.set_page_config(page_title="RAG based AI ChatBot model", page_icon="🤖", layout="wide")
+
 
     # Custom CSS for styling
     st.markdown("""
