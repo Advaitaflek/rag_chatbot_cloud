@@ -8,8 +8,11 @@ from sklearn.metrics.pairwise import cosine_similarity
 from transformers import pipeline  
 
 # Smaller, faster, fits in 2 GiB RAM
-qa_model = pipeline("text2text-generation", model="google/flan-t5-small")
+@st.cache_resource
+def load_model():
+    return pipeline("text2text-generation", model="google/flan-t5-small")
 
+qa_model = load_model()
 # (Optional) Slightly bigger but may still run on t3.micro if swap is enabled
 # qa_model = pipeline("text2text-generation", model="google/flan-t5-base")
 
@@ -213,8 +216,13 @@ def main():
         st.write("Please upload a PDF to start.")
 
     if 'original_text' in st.session_state:
-        chunks = split_text_into_chunks(st.session_state['original_text'])
-        vectorizer, embeddings = create_embeddings(chunks)
+        if 'chunks' not in st.session_state:
+            st.session_state['chunks'] = split_text_into_chunks(st.session_state['original_text'])
+            st.session_state['vectorizer'], st.session_state['embeddings'] = create_embeddings(st.session_state['chunks'])
+
+        chunks = st.session_state['chunks']
+        vectorizer = st.session_state['vectorizer']
+        embeddings = st.session_state['embeddings']
 
         if prompt := st.chat_input("What is your question?"):
             # Detect the type of input
